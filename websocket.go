@@ -7,7 +7,7 @@ import (
 	"net/url"
 	"sync"
 	"time"
-
+	"regexp"
 	"github.com/gorilla/websocket"
 )
 
@@ -107,8 +107,10 @@ func (u *UpstreamProxy) upstreamWSURL(r url.URL) *url.URL {
 }
 
 func isWebsocketRequest(req *http.Request) bool {
+	r, _ := regexp.Compile(ConnectionHeaderValue)
+
 	return req.Header.Get(UpgradeHeaderKey) == UpgradeHeaderValue &&
-		req.Header.Get(ConnectionHeaderKey) == ConnectionHeaderValue
+		r.MatchString(req.Header.Get(ConnectionHeaderKey))
 }
 
 func copyHeaders(dst *http.Header, src http.Header, headers []string) {
